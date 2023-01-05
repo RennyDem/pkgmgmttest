@@ -1,0 +1,120 @@
+#!/bin/sh
+# miu - scratchpkg rewritten for testing purposes
+
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+CYAN='\033[36m'
+PURPLE='\033[35m'
+CRESET='\033[0m'
+
+nocolor() {
+    RED=
+    GREEN=
+    YELLOW=
+    CYAN=
+    PURPLE=
+    CRESET=
+}
+
+msg() {
+    printf "${GREEN}==>${CRESET} %s\n" "$1"
+}
+
+msginst() {
+    printf "[${GREEN}==>${CRESET} %s\n]" "$1"
+}
+
+msgmiss() {
+    printf "[${YELLOW}==>${CRESET} %s\n]" "$1"
+}
+
+msgnoinst() {
+    printf "[-] %s\n" "$1"
+}
+
+msgerr() {
+    printf "${RED}ERROR:${CRESET} %s\n" "$1" >&2
+}
+
+msgwarn() {
+    printf "${YELLOW}WARNING:${CRESET} %s\n" "$1" >&2
+}
+
+msg_portnotfound() {
+    echo "Port '$1' not found."
+}
+
+msg_portnotinstalled() {
+    echo "Port '$1' not installed."
+}
+
+msg_portalreadyinstalled() {
+    echo "Port '$1' already installed."
+}
+
+msg_depsstatus() {
+    for i in $@; do
+        if miu_isinstalled $i; then
+            msginst "$i"
+        elif getportpath $i >/dev/null; then
+            msgnoinst "$i"
+        else
+            msgmiss "$i"
+        fi
+    done
+    unset i
+}
+
+needroot() {
+    if [ "$(id -u)" !=0 ]; then
+        if [ "$#" -eq 0 ]; then
+            needroot "This operation"
+        else
+            echo "$* need root access!"
+        fi
+        exit 1
+    fi
+}
+
+getportpath() {
+    for repo in $PORT_REPO; do
+        if [ -f "$repo/$1/$BUILD_SCRIPT" ]; then
+                 dirname "$repo/$1/$BUILD_SCRIPT"
+                 return 0
+        fi
+    done
+    return 1
+}
+
+vercomp() {
+        if [ "$1" = "$2" ]; then
+                return 0
+        elif [ "$1" = "$(echo "$1\n$2" | sort -V | head -n1)" ]; then
+                return 1
+        else
+                return 2
+        fi
+}
+
+get_iversion() {
+        head -n1 $PKGDB_DIR/$1 2>/dev/null | awk '{print $1}'
+}
+
+get_irelease() {
+        head -n1 $PKGDB_DIR/$1 2>/dev/null | awk '{print $2}'
+}       
+
+allinstalled() {
+    for i in $PKGDB_DIR/*; do
+            echo ${i##*/}
+    done
+}
+
+deps_alias() {
+        [ -f "$ALIAS_FILE" ] || {
+                echo $@
+                return
+        }
+        while   [ "$1" ]; do
+                    if [ "(grep -w 
