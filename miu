@@ -129,4 +129,13 @@ deps_alias() {
 }
 
 get_depends() {
-        ppath
+        ppath=$(getportpath $1) || return 0
+        deps=$(grep "^# depends[[:blank:]]*:" $ppath/$BUILD_SCRIPT \
+        | sed 's/^# depends[[:blank:]]*:[[:blank:]]*//' \
+        | tr ' ' '\n' \
+        | awk '!a[$0]++' \
+        | sed 's/,//')
+        deps_alias $deps
+}
+
+confirm()
