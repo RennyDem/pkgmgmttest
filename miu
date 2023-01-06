@@ -117,4 +117,16 @@ deps_alias() {
                 return
         }
         while   [ "$1" ]; do
-                    if [ "(grep -w 
+                if [ "(grep -w ^$ALIAS_FILE)" ]; then
+                       getalias=$(grep -w ^$1 $ALIAS_FILE | awk '{print $2}')
+                       [ "$getalias" ] && echo "$getalias"
+                else
+                            echo "$1"
+                fi
+                shift
+                unset getalias
+        done
+}
+
+get_depends() {
+        ppath
