@@ -212,4 +212,18 @@ miu_sync() {
     portsync
 }
 
-cvperms()
+cvperms() {
+        s=0; n=0; count=0
+        for i in $(echo "$1" | sed -e 's/\(.\)/\1\n/g'); do
+                count=$((count+1))
+                case $i in
+                        d) ;;
+                        r) n=$((n+4));;
+                        w) n=$((n+2));;
+                        x) n=$((n+1));;
+                        s) [ $count = 4 ] && s=$((s+4)) || s=$((s+2)); n=$((n+1));;
+                        t) s=$((s+1)); n=$((n+1));;
+                        S) s=$((s+2));
+                        T) s=$((s+1));
+                esac
+                
