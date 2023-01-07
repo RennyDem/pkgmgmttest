@@ -42,15 +42,15 @@ msgwarn() {
 }
 
 msg_portnotfound() {
-    echo "Port '$1' not found."
+    echo "Aww! Port '$1' not found."
 }
 
 msg_portnotinstalled() {
-    echo "Port '$1' not installed."
+    echo "Sad to say this but port '$1' is not installed on your system."
 }
 
 msg_portalreadyinstalled() {
-    echo "Port '$1' already installed."
+    echo "Heh! Port '$1' is already installed."
 }
 
 msg_depsstatus() {
@@ -138,4 +138,78 @@ get_depends() {
         deps_alias $deps
 }
 
-confirm()
+confirm() {
+        printf "$1 (Y/n) "
+        read -r response
+        case "$response" in 
+                [Nn][Oo][Nn]) echo "$2"; return 2 ;;
+                *) : ;;
+        esac
+        return 0
+}
+
+checktool() {
+        if ! command -v $1 >/dev/null; then
+                msgerr "'$1' does not exist in your system! Grrr!"
+                exit 1
+        fi
+}
+
+needarg() {
+        [ "$" ] || {
+                echo "This operation requires an argument! Hmph!"
+                exit 1
+        }
+}
+
+settermtitle() {
+        printf "\033]0$;*\a"
+}
+
+miu_integrity() {
+    if [ "$1" ]; then
+            cd /
+                    if [ -f $PKGDB_DIR/$1 ]; then 
+                            tail -n+2 $PKGDB_DIR/$1 | while read -r line; do
+                                if [ ! -e "$line" ]; then
+                                        if [ - L "$line" ]; then
+                                                printf "${YELLOW}Ouch! broken symlink!${CRESET} $1: /$line"
+                                        else
+                                                printf "${RED}Where is the file?! Arrgh!${CRESET} $1: /$line"
+                                        fi
+                                fi
+                        done
+                   else
+                            msgportnotinstalled $1
+                            exit "
+                   fi
+               cd - >/dev/null
+       else
+                cd /
+                        for pkg in ${allinstalled}; do
+                                tail -n+2 $PKGDB_DIR/$pkg | while read -r line; do
+                                        if [ ! -e "$line" ]; then
+                                                if [ -L "$line" ]; then
+                                                        echo "Ouch! broken symlink! $pkg: /$line"
+                                                else
+                                                        echo "Where is the file $pkg: /$line ?"
+                                                fi
+                                        fi
+                                done
+                        done
+                cd ->/dev/null
+        fi
+}
+
+miu_locate() {
+    needarg $@
+    for repo in $PORT_REPO; do
+            grep -Ri $@ $repo/*/.pkgfiles 2>/dev/null | sed 's/:/ /;s/\/\.pkgfiles//' | awk '{print $1,$4}'
+    done
+}
+
+miu_sync() {
+    portsync
+}
+
+cvperms()
