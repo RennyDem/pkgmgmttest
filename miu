@@ -240,3 +240,26 @@ cvperms() {
 }
 
 fixperms()
+        needroot "Fix permissions! OwO"
+        for i in $PKGDBPERMS_DIR/*; do
+                [ -s $i ] || continue
+                while read -r perms own dir junk; do
+                        chmod $(cvperms $perms) /$dir
+                        echo $own | while IFS=/ read -r o g; do
+                                chown $o:$g /$dir
+                        done
+                done < $i
+        done
+}
+
+miu_trigger() {
+    needroot "Run trigger! Come on, run it!"
+    if [ -z "$*" ]; then
+            for i in $(seq 12); do
+                    eval trig_$i=1
+            done
+    else
+            pre_triggers $@
+    fi
+    post_triggers
+}
