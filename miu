@@ -150,7 +150,7 @@ confirm() {
 
 checktool() {
         if ! command -v $1 >/dev/null; then
-                msgerr "Sorry Mario, but '$1' is in another castle!"
+                msgerr "Sorry Mario, but our '$1' is in another castle!"
                 exit 1
         fi
 }
