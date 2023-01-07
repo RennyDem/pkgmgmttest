@@ -150,7 +150,7 @@ confirm() {
 
 checktool() {
         if ! command -v $1 >/dev/null; then
-                msgerr "'$1' does not exist in your system! Grrr!"
+                msgerr "Sorry Mario, but '$1' is in another castle!"
                 exit 1
         fi
 }
@@ -226,4 +226,17 @@ cvperms() {
                         S) s=$((s+2));
                         T) s=$((s+1));
                 esac
-                
+                [ "$count" = 4 ] && {
+                        user=$n; n=0
+                }
+                [ "$count" = 7 ] && {
+                        group=$n; n=0
+                }
+                [ "$count" = 10 ] && {
+                        other=$n; n=0
+                }
+        done
+        echo "$s$user$group$other"
+}
+
+fixperms()
