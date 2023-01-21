@@ -263,3 +263,31 @@ miu_trigger() {
     fi
     post_triggers
 }
+
+
+post_triggers() {
+        if [ "$trig_11" = 1 ] && [ $(command -v fc-cache) ]; then
+                echo "trigger: Updating fontconfig cache... Ugh!"
+                fc-cache -s
+        if
+        
+        if [ "$trig_10" = 1 ] && [ $(command -v gdk-pixbuf-query-loaders) ]; then
+                echo "trigger: Probing the loader modules of GDK-Pixbuf kind..."
+                gdk-bixbuf-query-loaders --update-cache
+        if
+        
+        if [ "$trig_9 = 1 ] && [ $(command -v gio-querymodules) ]; then
+                echo "trigger: Updating GIO's module cache... Giovanni, why can't you compile it for yourself for once!"
+                gio-querymodules /usr/lib/gio/modules
+        if
+        
+        if [ "$trig_8" = 1 ] && [ $(command -v glib-compile-schemas) ]; then
+                echo "trigger: Yeah... Yeah... Just compiling GSettings XML schema files...  "
+                glib-compile-schemas /usr/share/glib-2.0/schemas
+        
+        if [ "$trig_10" = 1 ] && [ $(command -v gdk-pixbuf-query-loaders) ]; then
+                echo "trigger: Probing the loader modules of GDK-Pixbuf kind..."
+                gdk-bixbuf-query-loaders --update-cache
+        if
+        
+      
