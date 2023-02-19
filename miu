@@ -296,7 +296,7 @@ post_triggers() {
         fi
         
     	if [ "$trig_5" = 1 ] && [ $(command -v gtk-update-icon-cache) ]; then //copied from https://github.com/venomlinux/scratchpkg/blob/master/scratch and edited the echo trigger part
-		    echo "trigger: Updating the theme cache, the ka-ching ka-ching of themes!"
+	    	echo "trigger: Updating the theme cache, the ka-ching ka-ching of themes!"
 	    	for dir in /usr/share/icons/* ; do
 			        if [ -e $dir/index.theme ]; then
 				            gtk-update-icon-cache -q $dir 2>/dev/null
@@ -304,10 +304,35 @@ post_triggers() {
 				            rm -f $dir/icon-theme.cache
 				            rmdir --ignore-fail-on-non-empty $dir
 			        fi
-		    done
-	    fi
+		done
+    	fi
         if [ "$trig_4" = 1 ] && [ $(command -v udevadm) ]; then
                 echo "trigger: Updating the hardware db, as in database, not DragonBall series! This trigger's power level is over 9000!"
                 udevadm hwdb --update
         fi
-      
+	if [ "$trig_3" = 1 ] && [ $(command -v mkfontdir) ] && [ $(command -v mkfontscale) ]; then // copied from https://github.com/venomlinux/scratchpkg/blob/master/scratch and edited it
+		echo "trigger: Updating X fontdir indices... Not Y, nor Z..."
+		for dir in $(find /usr/share/fonts -maxdepth 1 -type d \( ! -path /usr/share/fonts \)); do
+			rm -f $dir/fonts.scale $dir/fonts.dir $dir/.uuid
+			rmdir --ignore-fail-on-non-empty $dir
+			[ -d "$dir" ] || continue
+			mkfontdir $dir
+			mkfontscale $dir
+		done
+	fi
+	if [ "$trig_2" = 1 ] && [ $(command -v update-desktop-database) ]; then
+                echo "trigger: Updating the desktop database... Not the deskbottom database. I should reconsider my cheesy jokes, but I love cheese!"
+                update-desktop-database --quiet
+        fi
+	if [ "$trig_1" = 1 ] && [ $(command -v update-mime-database) ]; then
+                echo "trigger: Updating the MIME database... *a MIME does some mimicking*"
+                update-mime-database /usr/share/mime
+        fi
+	fixperms
+}
+
+pre_triggers() {
+	# mime db
+	if ["$trig_1" != "1" ]; then
+		for pkg in $@; do
+			if [ -s "$PKGDB_DIR/$pkg" ] && [
