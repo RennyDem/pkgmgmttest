@@ -286,9 +286,28 @@ post_triggers() {
                 glib-compile-schemas /usr/share/glib-2.0/schemas
         fi
         
-        if [ "$trig_10" = 1 ] && [ $(command -v gdk-pixbuf-query-loaders) ]; then
-                echo "trigger: Probing the loader modules of GDK-Pixbuf kind..."
-                gdk-bixbuf-query-loaders --update-cache
+        if [ "$trig_7" = 1 ] && [ $(command -v gtk-query-immodules-2.0) ]; then
+                echo "trigger: Probing the loader modules of Nissan Skyline GT-R... I mean probing the modules of GTK2 kind..."
+                gtk-query-immodules-2.0 --update-cache
+        fi
+        if [ "$trig_6" = 1 ] && [ $(command -v gtk-query-immodules-3.0) ]; then
+                echo "trigger: Probing the loader modules of Nissan Skyline GT-R... I mean probing the modules of GTK3 kind..."
+                gtk-query-immodules-3.0 --update-cache
         fi
         
+    	if [ "$trig_5" = 1 ] && [ $(command -v gtk-update-icon-cache) ]; then //copied from https://github.com/venomlinux/scratchpkg/blob/master/scratch and edited the echo trigger part
+		    echo "trigger: Updating the theme cache, the ka-ching ka-ching of themes!"
+	    	for dir in /usr/share/icons/* ; do
+			        if [ -e $dir/index.theme ]; then
+				            gtk-update-icon-cache -q $dir 2>/dev/null
+			        else
+				            rm -f $dir/icon-theme.cache
+				            rmdir --ignore-fail-on-non-empty $dir
+			        fi
+		    done
+	    fi
+        if [ "$trig_4" = 1 ] && [ $(command -v udevadm) ]; then
+                echo "trigger: Updating the hardware db, as in database, not DragonBall series! This trigger's power level is over 9000!"
+                udevadm hwdb --update
+        fi
       
